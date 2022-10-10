@@ -25,6 +25,7 @@ from spacy import displacy
 from flaskext.markdown import Markdown
 
 import Model.tagLabel as imModel #เรียก import file python โดยใช้แบบ oop 
+import sentiment.sentiment_ana as imSen
 
 app = Flask(__name__)
 Markdown(app)
@@ -49,6 +50,18 @@ def spa():
 @app.route('/model')
 def pagemodel():
     return render_template("page_model.html")
+
+@app.route('/sentiment')
+def sen():
+    return render_template("page_sentiment.html")
+
+@app.route('/upload_sentiment' , methods=['GET','POST'])
+def loadsen():
+    input_text = request.form.getlist('Textsen')
+    ansSen = imSen.input_textblob(str(input_text))
+
+    return render_template("page_sentiment.html" , ansSen = ansSen)
+
 
 @app.route('/upload_model' , methods=['GET','POST'] )
 def loadDel():
@@ -245,8 +258,7 @@ def Tf(articles):
     for term_id , weight in sorted_tfidf_weight[0:5]:
         temp_TF.append(weight)
         print(dictionary.get(term_id) , weight)
-    
     return temp_TF
 
 if __name__ == "__main__":
-    app.run(debug=True , port=8080)
+    app.run(debug=True , port=8080 , host="192.168.2.21")
